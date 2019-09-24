@@ -90,7 +90,7 @@ elif args.source == 1:
 else:
     raise Exception("No such source for target")
 
-n = target.nvars[0]
+n = target.nvars[0]//2
 
 if args.double:
     target = target.to(torch.float64)

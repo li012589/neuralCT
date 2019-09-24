@@ -5,7 +5,7 @@ from .source import Source
 
 class Ring2d(Source):
     def __init__(self):
-        super(Ring2d,self).__init__([2],name = 'Ring2D')
+        super(Ring2d,self).__init__([4],name = 'Ring2D')
 
     def sample(self,batchSize,thermalSteps = 100, tranCore=None):
         return self._sampleWithMetropolis(batchSize,thermalSteps,tranCore)
