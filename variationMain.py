@@ -33,8 +33,8 @@ group.add_argument("-hdim", type=int, default=128, help="Hidden dimension of mlp
 group.add_argument("-numFlow", type=int, default=1, help="Number of flows")
 group.add_argument("-nlayers", type=int, default=8, help="Number of mlps in rnvp")
 group.add_argument("-nmlp", type=int, default=2, help="Number of layers of mlps")
-group.add_argument("-shift",action="store_false",help="Shift latent variable or not")
-group.add_argument("-relax",action="store_false",help="Trainable latent p or not")
+group.add_argument("-shift",action="store_true",help="Shift latent variable or not")
+group.add_argument("-relax",action="store_true",help="Trainable latent p or not")
 
 group = parser.add_argument_group('Target parameters')
 group.add_argument("-source",type=int, default=0,help="# of source, 0 for Ring2d, 1 for HarmonicChain")
