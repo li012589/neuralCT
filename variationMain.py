@@ -86,7 +86,7 @@ else:
 if args.source == 0:
     target = source.Ring2d()
 elif args.source == 1:
-    target = source.HarmonicChain(4,1)
+    target = source.HarmonicChain(32,1)
 else:
     raise Exception("No such source for target")
 
@@ -132,82 +132,71 @@ if args.load:
     print("shift:",f.layerList[0].shift)
     print("scaling:",f.layerList[0].elements)
     print("omega0:",omega[0].item(),"omega1:",omega[1].item())
-    t =f.sample(1000)[0]
-    z = f.forward(t)[0].detach().numpy()
-    r = torch.sqrt(t[:,0]**2+t[:,1]**2).detach().numpy()
-    theta = torch.atan2(t[:,1],t[:,0]).detach().numpy()
 
-    plt.figure()
-    plt.scatter(z[:,0],r)
-    plt.scatter(z[:,0],theta)
-    plt.title("Q1")
+    if args.source == 0:
+        t =f.sample(1000)[0]
+        z = f.forward(t)[0].detach().numpy()
+        r = torch.sqrt(t[:,0]**2+t[:,1]**2).detach().numpy()
+        theta = torch.atan2(t[:,1],t[:,0]).detach().numpy()
 
-    plt.figure()
-    plt.scatter(z[:,1],r)
-    plt.scatter(z[:,1],theta)
-    plt.title("Q2")
+        plt.figure()
+        plt.scatter(z[:,0],r)
+        plt.scatter(z[:,0],theta)
+        plt.title("Q1")
 
-    plt.show()
+        plt.figure()
+        plt.scatter(z[:,1],r)
+        plt.scatter(z[:,1],theta)
+        plt.title("Q2")
 
-    '''
-    t0 = t[0].reshape(1,2).detach().requires_grad_()
-    print("jacobian:",utils.jacobian(qf.forward(t0)[0],t0))
-    t = t.detach().numpy()
-    T = T.detach().numpy()
-    plt.scatter(t[:,0],t[:,1])
-    plt.scatter(T[:,0],T[:,1])
-    fig = plt.figure()
-    ax1 = fig.add_subplot(221)
-    #ax1.scatter(t[:,1]-t[:,0],T[:,0])
-    ax1.scatter(t[:,0],T[:,0])
-    plt.title("q1 v.s. Q1")
-    ax2 = fig.add_subplot(222)
-    #ax2.scatter(t[:,1]-t[:,0],T[:,1])
-    ax2.scatter(t[:,0],T[:,1])
-    plt.title("q1 v.s. Q2")
-    ax3 = fig.add_subplot(223)
-    #ax3.scatter(t[:,1]+t[:,0],T[:,0])
-    ax3.scatter(t[:,1],T[:,0])
-    plt.title("q2 v.s. Q1")
-    ax4 = fig.add_subplot(224)
-    #ax4.scatter(t[:,1]+t[:,0],T[:,1])
-    ax4.scatter(t[:,1],T[:,1])
-    plt.title("q2 v.s. Q2")
+        plt.show()
 
-    fig = plt.figure()
-    ax1 = fig.add_subplot(221)
-    ax1.scatter(t[:,1]-t[:,0],T[:,0])
-    plt.title("q2-q1 v.s. Q1")
-    #ax1.scatter(t[:,0],T[:,0])
-    ax2 = fig.add_subplot(222)
-    ax2.scatter(t[:,1]-t[:,0],T[:,1])
-    plt.title("q2-q1 v.s. Q2")
-    #ax2.scatter(t[:,0],T[:,1])
-    ax3 = fig.add_subplot(223)
-    ax3.scatter(t[:,1]+t[:,0],T[:,0])
-    plt.title("q2+q1 v.s. Q1")
-    #ax3.scatter(t[:,1],T[:,0])
-    ax4 = fig.add_subplot(224)
-    ax4.scatter(t[:,1]+t[:,0],T[:,1])
-    plt.title("q2+q1 v.s. Q2")
-    #ax4.scatter(t[:,1],T[:,1])
-    '''
+    elif args.source == 1:
+        fig = plt.figure(figsize=(8, 5))    
 
-    '''
-    mX = np.linspace(-5,13,900)
-    mY = np.linspace(-5,17,1100)
-    X, Y = np.meshgrid(mX, mY)
-    XY =torch.cat([torch.tensor(X.reshape(-1,1)),torch.tensor(Y.reshape(-1,1))],dim=1).float()
-    Z = qf.forward(XY)[0]
-    Z0 = Z[:,0].reshape(1100,900).detach().numpy()
-    Z1 = Z[:,1].reshape(1100,900).detach().numpy()
-    plt.figure()
-    plt.contour(X,Y,Z0)
-    plt.title("Q1 vs q1,q2")
-    plt.figure()
-    plt.contour(X,Y,Z1)
-    plt.title("Q2 vs q1,q2")
-    '''
+        plt.subplot(121)
+        omega, idx = torch.sort(omega)
+
+        klist = np.arange(len(omega)) +1
+
+        omegalist = 2*np.sin(klist*np.pi/(2*len(omega)+2))
+
+        plt.plot(klist, omega.detach().cpu().numpy(), 'o', color=colors[0], markerfacecolor='none', markeredgewidth=2)
+        plt.plot(klist, omegalist, color=colors[0], lw=2, label='analytical')
+        plt.xlabel('$k$')
+        plt.ylabel('$\omega_k$')
+        plt.legend(loc='lower right', frameon=False)
+
+        plt.subplot(122)
+        idx = idx[:2]
+
+        batch_size = 1
+        dim = 64
+        x,_ = f.sample(batch_size)
+        z,_ = f.inverse(x)
+
+        jacobian = torch.zeros(batch_size, dim, dim)
+        for i in range(dim):
+            jacobian[:, i, :] = torch.autograd.grad(z[:, i], x, grad_outputs=torch.ones(batch_size, device=x.device), create_graph=True)[0]
+
+        j = np.arange(dim//2)+1
+
+        data = jacobian.detach().numpy()#
+        sign = [1, -1]
+        for batch in range(batch_size):
+            for n, i in enumerate(idx):#
+                plt.plot(j, data[batch, dim//2+i, dim//2:], 'o', label='$k=%g$'%(n+1), color=colors[n], markerfacecolor='none', markeredgewidth=2)#
+                plt.plot(j, sign[n]*np.sqrt(2/(dim//2+1))*np.sin(j*(n+1)*np.pi/(dim//2+1)), '-', color=colors[n], lw=2)
+
+        plt.legend(handlelength=1, frameon=False)
+
+        plt.xlabel('$i$')
+        plt.ylabel(r'$\nabla_{q_i} Q_k$')
+        plt.show()
+
+    else:
+        raise Exception("No such source")
+
     import pdb
     pdb.set_trace()
 
