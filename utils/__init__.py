@@ -9,3 +9,4 @@ from .saveUtils import createWorkSpace,cleanSaving
 from .dataloader import MDSampler,loadmd, load
 from .flowBuilder import flowBuilder
 from .unit import variance, smile2mass
+from .img_trans import logit,logit_back
