@@ -126,8 +126,8 @@ if args.load:
     saved = torch.load(name,map_location=device)
     f.load(saved)
 
-    d0 = f.layerList[0].elements[:2]
-    d1 = f.layerList[0].elements[2:]
+    d0 = f.layerList[0].elements[:n]
+    d1 = f.layerList[0].elements[n:]
     omega = (1/(torch.exp(d0+d1)))
     print("shift:",f.layerList[0].shift)
     print("scaling:",f.layerList[0].elements)
@@ -161,11 +161,10 @@ if args.load:
 
         omegalist = 2*np.sin(klist*np.pi/(2*len(omega)+2))
 
-        plt.plot(klist, omega.detach().cpu().numpy(), 'o', color=colors[0], markerfacecolor='none', markeredgewidth=2)
-        plt.plot(klist, omegalist, color=colors[0], lw=2, label='analytical')
+        plt.plot(klist, omega.detach().cpu().numpy(), 'o',  markerfacecolor='none', markeredgewidth=2)
+        plt.plot(klist, omegalist, lw=2, label='analytical')
         plt.xlabel('$k$')
         plt.ylabel('$\omega_k$')
-        plt.legend(loc='lower right', frameon=False)
 
         plt.subplot(122)
         idx = idx[:2]
@@ -173,7 +172,7 @@ if args.load:
         batch_size = 1
         dim = 64
         x,_ = f.sample(batch_size)
-        z,_ = f.inverse(x)
+        z,_ = f.forward(x)
 
         jacobian = torch.zeros(batch_size, dim, dim)
         for i in range(dim):
@@ -185,10 +184,8 @@ if args.load:
         sign = [1, -1]
         for batch in range(batch_size):
             for n, i in enumerate(idx):#
-                plt.plot(j, data[batch, i, :dim//2], 'o', label='$k=%g$'%(n+1), color=colors[n], markerfacecolor='none', markeredgewidth=2)#
-                plt.plot(j, sign[n]*np.sqrt(2/(dim//2+1))*np.sin(j*(n+1)*np.pi/(dim//2+1)), '-', color=colors[n], lw=2)
-
-        plt.legend(handlelength=1, frameon=False)
+                plt.plot(j, data[batch, i, :dim//2], 'o', label='$k=%g$'%(n+1), markerfacecolor='none', markeredgewidth=2)#
+                plt.plot(j, sign[n]*np.sqrt(2/(dim//2+1))*np.sin(j*(n+1)*np.pi/(dim//2+1)), '-', lw=2)
 
         plt.xlabel('$i$')
         plt.ylabel(r'$\nabla_{q_i} Q_k$')
