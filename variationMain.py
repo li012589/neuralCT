@@ -185,7 +185,7 @@ if args.load:
         sign = [1, -1]
         for batch in range(batch_size):
             for n, i in enumerate(idx):#
-                plt.plot(j, data[batch, dim//2+i, dim//2:], 'o', label='$k=%g$'%(n+1), color=colors[n], markerfacecolor='none', markeredgewidth=2)#
+                plt.plot(j, data[batch, i, :dim//2], 'o', label='$k=%g$'%(n+1), color=colors[n], markerfacecolor='none', markeredgewidth=2)#
                 plt.plot(j, sign[n]*np.sqrt(2/(dim//2+1))*np.sin(j*(n+1)*np.pi/(dim//2+1)), '-', color=colors[n], lw=2)
 
         plt.legend(handlelength=1, frameon=False)
