@@ -29,10 +29,10 @@ group.add_argument("-K",type=float, default=300, help="Temperature")
 group.add_argument("-double", action='store_true',help="Use double or single")
 
 group = parser.add_argument_group('Network parameters')
-group.add_argument("-hdim", type=int, default=680, help="Hidden dimension of mlps")
+group.add_argument("-hdim", type=int, default=128, help="Hidden dimension of mlps")
 group.add_argument("-numFlow", type=int, default=1, help="Number of flows")
-group.add_argument("-nlayers", type=int, default=16, help="Number of mlps in rnvp")
-group.add_argument("-nmlp", type=int, default=3, help="Number of layers of mlps")
+group.add_argument("-nlayers", type=int, default=8, help="Number of mlps in rnvp")
+group.add_argument("-nmlp", type=int, default=2, help="Number of layers of mlps")
 group.add_argument("-shift",action="store_false",help="Shift latent variable or not")
 group.add_argument("-relax",action="store_false",help="Trainable latent p or not")
 
