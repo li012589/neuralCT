@@ -84,9 +84,9 @@ else:
         K = int(np.array(f["K"]))
 
 if args.source == 0:
-    target = source.Ring2d()
+    target = source.Ring2d().to(device)
 elif args.source == 1:
-    target = source.HarmonicChain(32,1)
+    target = source.HarmonicChain(32,1).to(device)
 else:
     raise Exception("No such source for target")
 
