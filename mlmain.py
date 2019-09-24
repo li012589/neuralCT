@@ -34,8 +34,8 @@ group.add_argument("-hdim", type=int, default=680, help="Hidden dimension of mlp
 group.add_argument("-numFlow", type=int, default=1, help="Number of flows")
 group.add_argument("-nlayers", type=int, default=16, help="Number of mlps in rnvp")
 group.add_argument("-nmlp", type=int, default=3, help="Number of layers of mlps")
-group.add_argument("-shift",action="store_false",help="Shift latent variable or not")
-group.add_argument("-relax",action="store_false",help="Trainable latent p or not")
+group.add_argument("-shift",action="store_true",help="Shift latent variable or not")
+group.add_argument("-relax",action="store_true",help="Trainable latent p or not")
 
 group = parser.add_argument_group('Target parameters')
 group.add_argument("-n",type=int, default=784,help="Number of dimensions")
@@ -139,6 +139,20 @@ if args.load:
     print("omega",omega)
 
     from matplotlib import pyplot as plt
+    from utils import logit_back,logit
+
+    base = target.data[:1,:]
+    base = target.sample(1)
+    f_rnvp = f.layerList[1].flow
+
+    zbase = f.forward(base)[0]
+    xbase = f.inverse(zbase)[0][:,:784]
+
+    plt.figure()
+    plt.imshow(logit_back(base[:,:784].reshape(28,28)),cmap="gray")
+    plt.figure()
+    plt.imshow(logit_back(xbase.detach().reshape(28,28)),cmap="gray")
+    plt.show()
 
     import pdb
     pdb.set_trace()
