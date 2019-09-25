@@ -135,23 +135,44 @@ if args.load:
 
     d0 = f.layerList[0].elements[:n]
     d1 = f.layerList[0].elements[n:]
-    omega = (1/(torch.exp(d0+d1))).detach().numpy()
+    omega = (1/(torch.exp(d0+d1))).detach()
     print("omega",omega)
 
     from matplotlib import pyplot as plt
     from utils import logit_back,logit
 
-    base = target.data[:1,:]
+    '''
     base = target.sample(1)
-    f_rnvp = f.layerList[1].flow
 
     zbase = f.forward(base)[0]
     xbase = f.inverse(zbase)[0][:,:784]
 
+    img1 = base[:,:784].reshape(28,28)
+    img2 = xbase.detach().reshape(28,28)
     plt.figure()
-    plt.imshow(logit_back(base[:,:784].reshape(28,28)),cmap="gray")
+    plt.imshow(logit_back(img1),cmap="gray")
     plt.figure()
-    plt.imshow(logit_back(xbase.detach().reshape(28,28)),cmap="gray")
+    plt.imshow(logit_back(img2),cmap="gray")
+    plt.figure()
+    img = torch.cat([img1,img2],0)
+    plt.imshow(logit_back(img),cmap="gray")
+    plt.show()
+    '''
+
+    from copy import deepcopy
+    omega, idx = torch.sort(omega)
+    original = target.sample(1)
+    saveList = [original[:,:784].reshape(28,28)]
+    z = f.forward(original)[0].detach()
+    for nslow in [5,10,15,20,25,30,35]:
+        noise = torch.randn(nslow)
+        zz = deepcopy(z)
+        zz[:,idx[nslow:784]] = f.layerList[0].inverse(torch.randn(original.shape))[0][:,idx[nslow:784]]
+        saveList.append(f.inverse(zz)[0].detach()[:,:784].reshape(28,28))
+    imgs = torch.cat(saveList,1)
+
+    plt.figure(figsize=(12,4))
+    plt.imshow(logit_back(imgs),cmap="gray")
     plt.show()
 
     import pdb
