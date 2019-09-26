@@ -9,7 +9,6 @@ class Source(nn.Module):
         super(Source, self).__init__()
         self.name = name
         self.nvars = nvars
-        self.callCounter = 0
         self.K = torch.nn.Parameter(torch.tensor(K,dtype=torch.float32),requires_grad=False)
 
     def __call__(self,*args,**kargs):
@@ -25,7 +24,6 @@ class Source(nn.Module):
             return self._sampleWithHMC(batchSize,thermalSteps,interSteps, epsilon)
 
     def logProbability(self,x,K=None):
-        self.callCounter += 1
         return -self.energy(x,K)
 
     def energy(self,x,K=None):
