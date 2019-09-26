@@ -37,11 +37,11 @@ python ./variationMain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nla
 
 **Applications**
 
-1. Ring2D distribution
+1. [Ring2D distribution](1_Ringworld.ipynb)
 
    test
 
-2. Harmonic Chain
+2. [Harmonic Chain](2_HarmonicChain.ipynb)
 
    test
 
@@ -77,7 +77,7 @@ python ./variationMain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nla
 
 **Applications**
 
-1. MNIST compression
+1. [MNIST compression](4_MNIST.ipynb)
 
    test
 
@@ -114,7 +114,7 @@ python ./mdmain.py -cuda 6 -batch 200 -epoch 500 -fixy 2.3222 -dataset ./databas
 
 **Applications**
 
-1. Alanine Dipeptide
+1. [Alanine Dipeptide](3_AlanineDipeptide.ipynb)
 
    test
 
