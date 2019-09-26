@@ -152,7 +152,7 @@ if args.load:
         plt.show()
 
     elif args.source == 1:
-        fig = plt.figure(figsize=(8, 5))    
+        fig = plt.figure(figsize=(8, 5))
 
         plt.subplot(121)
         omega, idx = torch.sort(omega)
@@ -167,23 +167,21 @@ if args.load:
         plt.ylabel('$\omega_k$')
 
         plt.subplot(122)
-        idx = idx[:2]
 
         batch_size = 1
-        dim = 64
+        dim = n*2
         x,_ = f.sample(batch_size)
-        z,_ = f.forward(x)
+        z,_ = f.layerList[1].forward(x)
 
-        jacobian = torch.zeros(batch_size, dim, dim)
-        for i in range(dim):
-            jacobian[:, i, :] = torch.autograd.grad(z[:, i], x, grad_outputs=torch.ones(batch_size, device=x.device), create_graph=True)[0]
+        from utils import jacobian
+        jaco = jacobian(z,x)
 
         j = np.arange(dim//2)+1
 
-        data = jacobian.detach().numpy()#
+        data = jaco.detach().numpy()#
         sign = [1, -1]
         for batch in range(batch_size):
-            for n, i in enumerate(idx):#
+            for n, i in enumerate(idx[:2]):#
                 plt.plot(j, data[batch, i, :dim//2], 'o', label='$k=%g$'%(n+1), markerfacecolor='none', markeredgewidth=2)#
                 plt.plot(j, sign[n]*np.sqrt(2/(dim//2+1))*np.sin(j*(n+1)*np.pi/(dim//2+1)), '-', lw=2)
 
