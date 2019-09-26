@@ -6,7 +6,7 @@ In this work, we encode sympletic constrain into normalizing flow models, so tha
 
 ## Usage
 
-###1. Variational
+### 1. Variational
 
 To train a neuralCT via variational approach, use `variationalMain.py`. To train on our provided target distributios, you can specify this using **-source** option. To train on a different taget distribution, you will have to code your own target, examples can be found in `source` folder.
 
