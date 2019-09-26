@@ -1,3 +1,5 @@
 database/alanine-dipeptide-3x250ns-backbone-dihedrals.npz filter=lfs diff=lfs merge=lfs -text
 database/alanine-dipeptide-3x250ns-heavy-atom-positions.npz filter=lfs diff=lfs merge=lfs -text
 database/mnist.npz filter=lfs diff=lfs merge=lfs -text
+demo filter=lfs diff=lfs merge=lfs -text
+demo/MNIST_relax_True_shift_True_T_300_depthLevel_1_l16_M3_H680/savings/FlowNetSaving_epoch390.saving filter=lfs diff=lfs merge=lfs -text
