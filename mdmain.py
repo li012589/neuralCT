@@ -262,29 +262,16 @@ if args.load:
             mi_psi.append( kraskov_mi(theta[sample*Npersample:(sample+1)*Npersample, 1].reshape(-1, 1), z[sample*Npersample:(sample+1)*Npersample, idx[k]].reshape(-1, 1) ))
 
     mi_phi = np.array(mi_phi)
-    mi_phi = mi_phi.reshape(Nk, Nsamples) 
+    mi_phi = mi_phi.reshape(Nk, Nsamples)
 
     mi_psi = np.array(mi_psi)
-    mi_psi = mi_psi.reshape(Nk, Nsamples) 
+    mi_psi = mi_psi.reshape(Nk, Nsamples)
 
     plt.errorbar(np.arange(Nk)+1, mi_phi.mean(axis=1), yerr=mi_phi.std(axis=1)/np.sqrt(Nsamples), fmt='o-', label='$I(Q_k:\Phi)$', markerfacecolor='none', markeredgewidth=2, capsize=8, lw=2)
 
     plt.errorbar(np.arange(Nk)+1, mi_psi.mean(axis=1), yerr=mi_psi.std(axis=1)/np.sqrt(Nsamples), fmt='o-', label='$I(Q_k:\Psi)$', markerfacecolor='none', markeredgewidth=2, capsize=8, lw=2)
 
     plt.show()
-    #plt.set_xlabel('$k$')
-    #plt.set_ylabel('mutual information')
-    
-    #remove errorbar from legend
-    #handles, labels = plt.get_legend_handles_labels()
-    #handles = [h[0] if isinstance(h, container.ErrorbarContainer) else h for h in handles]
-    #plt.legend(handles, labels, frameon=False)
-
-    #plt.ylim([-0.1, 1.5])
-    #plt.yscale('log')
-
-    #plt.subplots_adjust(wspace=0.4, bottom=0.15)
-    #plt.gca().xaxis.set_major_locator(MaxNLocator(6, integer=True))
 
 
     import pdb

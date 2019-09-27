@@ -141,24 +141,6 @@ if args.load:
     from matplotlib import pyplot as plt
     from utils import logit_back,logit
 
-    '''
-    base = target.sample(1)
-
-    zbase = f.forward(base)[0]
-    xbase = f.inverse(zbase)[0][:,:784]
-
-    img1 = base[:,:784].reshape(28,28)
-    img2 = xbase.detach().reshape(28,28)
-    plt.figure()
-    plt.imshow(logit_back(img1),cmap="gray")
-    plt.figure()
-    plt.imshow(logit_back(img2),cmap="gray")
-    plt.figure()
-    img = torch.cat([img1,img2],0)
-    plt.imshow(logit_back(img),cmap="gray")
-    plt.show()
-    '''
-
     from copy import deepcopy
     omega, idx = torch.sort(omega)
     original = target.sample(1)
