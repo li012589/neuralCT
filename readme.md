@@ -40,7 +40,7 @@ python ./mlmain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16
 
    ![mnist](etc/mnist.png)
 
-#### MD(special case of MLE)
+#### 1.1 MD(special case of MLE)
 
 To train a neuralCT for molecular dynamics, use `mdmain.py`
 
