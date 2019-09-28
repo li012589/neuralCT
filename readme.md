@@ -8,7 +8,7 @@ In this work, we encode sympletic constrain into normalizing flow models, so tha
 
 ## Usage
 
-### 1. MLE
+### 1. Phase Space Density Estimation
 
 To train a neuralCT via variational approach, use `mlmain.py`. 
 
@@ -35,10 +35,6 @@ python ./mlmain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16
 **Applications**
 
 1. [MNIST compression](4_MNIST.ipynb)
-
-   Using latent mode to compress a MNIST image.
-
-   ![mnist](etc/mnist.png)
 
 #### 1.1 MD(special case of MLE)
 
@@ -70,11 +66,7 @@ python ./mdmain.py -cuda 6 -batch 200 -epoch 500 -fixy 2.3222 -dataset ./databas
 
 1. [Alanine Dipeptide](3_AlanineDipeptide.ipynb)
 
-   Automatically discover collective mode.
-
-   ![ad](etc/ad.png)
-
-### 2. Variational
+### 2. Variational Free Energy
 
 To train a neuralCT via variational approach, use `variationalMain.py`. To train on our provided target distributios, you can specify this using **-source** option. To train on a different taget distribution, you will have to code your own target, examples can be found in `source` folder.
 
@@ -100,19 +92,14 @@ python ./variationMain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nla
 **Applications**
 
 1. [Ring2D distribution](1_Ringworld.ipynb)
-
-   ![Q12](etc/Q12.png)
-
 2. [Harmonic Chain](2_HarmonicChain.ipynb)
-
-   ![hc](etc/hc.png)
 
 ## Citation
 
 You are welcome to cite our work:
 
 ````latex
-@article{neuralRG,
+@article{neuralCT,
   Author = {Shuo-Hui Li, Linfeng Zhang, and Lei Wang},
   Title = {Neural Canonical Transformation with Symplectic Flows},
   Year = {2019},
