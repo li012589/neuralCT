@@ -6,42 +6,7 @@ In this work, we encode sympletic constrain into normalizing flow models, so tha
 
 ## Usage
 
-### 1. Variational
-
-To train a neuralCT via variational approach, use `variationalMain.py`. To train on our provided target distributios, you can specify this using **-source** option. To train on a different taget distribution, you will have to code your own target, examples can be found in `source` folder.
-
-**Options**
-
-- **-folder**: folder path to save and load model;
-- **-epochs**: Number of epoches to train;
-- **-batch**: Batch size of the training;
-- **-cuda**: Which device to use with -1 standing for CPU, number bigger than -1 is N.O. of GPU;
-- **-lr**: Learning rate;
-- **-save**: If save or not;
-- **-save_period**: Save after how many steps;
-- **-K**: Temperature;
-- **-double**: Use double or single float;
-- **-hdim**: Hidden dimension of mlps;
-- **-numFlow**: Number of flows layers;
-- **-nlayers**: Number of mlps layers in the rnvp;
-- **-nmlp**: Number of dense layers in each mlp;
-- **-shift**: Shift latent variable or not;
-- **-relax**: Trainable latent p or not;
-- **-source**: Using which source, 0 for Ring2d, 1 for HarmonicChain.
-
-**Example**
-
-````bash
-python ./variationMain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16 -source 0
-````
-
-**Applications**
-
-1. [Ring2D distribution](1_Ringworld.ipynb)
-
-2. [Harmonic Chain](2_HarmonicChain.ipynb)
-
-### 2. MLE
+### 1. MLE
 
 To train a neuralCT via variational approach, use `mlmain.py`. 
 
@@ -68,14 +33,14 @@ To train a neuralCT via variational approach, use `mlmain.py`.
 **Example**
 
 ```bash
-python ./variationMain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16 -dataset ./database/mnist.npz
+python ./mlmain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16 -dataset ./database/mnist.npz
 ```
 
 **Applications**
 
 1. [MNIST compression](4_MNIST.ipynb)
 
-### 3. MD(special case of MLE)
+#### MD(special case of MLE)
 
 To train a neuralCT for molecular dynamics, use `mdmain.py`
 
@@ -109,6 +74,40 @@ python ./mdmain.py -cuda 6 -batch 200 -epoch 500 -fixy 2.3222 -dataset ./databas
 **Applications**
 
 1. [Alanine Dipeptide](3_AlanineDipeptide.ipynb)
+
+### 2. Variational
+
+To train a neuralCT via variational approach, use `variationalMain.py`. To train on our provided target distributios, you can specify this using **-source** option. To train on a different taget distribution, you will have to code your own target, examples can be found in `source` folder.
+
+**Options**
+
+- **-folder**: folder path to save and load model;
+- **-epochs**: Number of epoches to train;
+- **-batch**: Batch size of the training;
+- **-cuda**: Which device to use with -1 standing for CPU, number bigger than -1 is N.O. of GPU;
+- **-lr**: Learning rate;
+- **-save**: If save or not;
+- **-save_period**: Save after how many steps;
+- **-K**: Temperature;
+- **-double**: Use double or single float;
+- **-hdim**: Hidden dimension of mlps;
+- **-numFlow**: Number of flows layers;
+- **-nlayers**: Number of mlps layers in the rnvp;
+- **-nmlp**: Number of dense layers in each mlp;
+- **-shift**: Shift latent variable or not;
+- **-relax**: Trainable latent p or not;
+- **-source**: Using which source, 0 for Ring2d, 1 for HarmonicChain.
+
+**Example**
+
+```bash
+python ./variationMain.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16 -source 0
+```
+
+**Applications**
+
+1. [Ring2D distribution](1_Ringworld.ipynb)
+2. [Harmonic Chain](2_HarmonicChain.ipynb)
 
 ## Citation
 
