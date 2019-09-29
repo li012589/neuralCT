@@ -1,5 +1,6 @@
 .cache
 .ipynb_checkpoints
+demo
 **/*.*~
 **/*.pyc
 **/.DS_Store
