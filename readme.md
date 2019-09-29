@@ -13,7 +13,7 @@ A sympletic normalizing flow which captures collective modes in the latent space
 
 ### 0. How to download
 
-*If you want to clone with demo saving and demo dataset, you will have to use [git-lfs](https://git-lfs.github.com/).*
+*If you want to clone with demo saving and demo dataset, you need to run `python download_demo.py` to download savings and datasets from Google Drive.*
 
 ### 1. Phase Space Density Estimation
 
