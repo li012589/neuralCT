@@ -37,7 +37,7 @@ group.add_argument("-shift",action="store_true",help="Shift latent variable or n
 group.add_argument("-relax",action="store_true",help="Trainable latent p or not")
 
 group = parser.add_argument_group('Target parameters')
-group.add_argument("-source",type=int, default=0,help="# of source, 0 for Ring2d, 1 for HarmonicChain")
+group.add_argument("-source",default="Ring2d",help="Which source to train")
 
 args = parser.parse_args()
 
@@ -83,9 +83,9 @@ else:
         epochs = int(np.array(f["epochs"]))
         K = int(np.array(f["K"]))
 
-if args.source == 0:
+if args.source == "Ring2d":
     target = source.Ring2d().to(device)
-elif args.source == 1:
+elif args.source == "HarmonicChain":
     target = source.HarmonicChain(32,1).to(device)
 else:
     raise Exception("No such source for target")
@@ -116,84 +116,6 @@ f = flowBuilder(n,numFlow,innerBuilder,1,relax=args.relax,shift=args.shift).to(d
 
 if not args.double:
     f = f.to(torch.float32)
-
-if args.load:
-    import os
-    import glob
-    from matplotlib import pyplot as plt
-    name = max(glob.iglob(rootFolder+"savings/"+'*.saving'), key=os.path.getctime)
-    print("load saving at "+name)
-    saved = torch.load(name,map_location=device)
-    f.load(saved)
-
-    d0 = f.layerList[0].elements[:n]
-    d1 = f.layerList[0].elements[n:]
-    omega = (1/(torch.exp(d0+d1)))
-    print("shift:",f.layerList[0].shift)
-    print("scaling:",f.layerList[0].elements)
-    print("omega0:",omega[0].item(),"omega1:",omega[1].item())
-
-    if args.source == 0:
-        t =f.sample(1000)[0]
-        z = f.forward(t)[0].detach().numpy()
-        r = torch.sqrt(t[:,0]**2+t[:,1]**2).detach().numpy()
-        theta = torch.atan2(t[:,1],t[:,0]).detach().numpy()
-
-        plt.figure()
-        plt.scatter(z[:,0],r)
-        plt.scatter(z[:,0],theta)
-        plt.title("Q1")
-
-        plt.figure()
-        plt.scatter(z[:,1],r)
-        plt.scatter(z[:,1],theta)
-        plt.title("Q2")
-
-        plt.show()
-
-    elif args.source == 1:
-        fig = plt.figure(figsize=(8, 5))
-
-        plt.subplot(121)
-        omega, idx = torch.sort(omega)
-
-        klist = np.arange(len(omega)) +1
-
-        omegalist = 2*np.sin(klist*np.pi/(2*len(omega)+2))
-
-        plt.plot(klist, omega.detach().cpu().numpy(), 'o',  markerfacecolor='none', markeredgewidth=2)
-        plt.plot(klist, omegalist, lw=2, label='analytical')
-        plt.xlabel('$k$')
-        plt.ylabel('$\omega_k$')
-
-        plt.subplot(122)
-
-        batch_size = 1
-        dim = n*2
-        x,_ = f.sample(batch_size)
-        z,_ = f.layerList[1].forward(x)
-
-        from utils import jacobian
-        jaco = jacobian(z,x)
-
-        j = np.arange(dim//2)+1
-
-        data = jaco.detach().numpy()#
-        sign = [1, -1]
-        for batch in range(batch_size):
-            for n, i in enumerate(idx[:2]):#
-                plt.plot(j, data[batch, i, :dim//2], 'o', label='$k=%g$'%(n+1), markerfacecolor='none', markeredgewidth=2)#
-                plt.plot(j, sign[n]*np.sqrt(2/(dim//2+1))*np.sin(j*(n+1)*np.pi/(dim//2+1)), '-', lw=2)
-
-        plt.xlabel('$i$')
-        plt.ylabel(r'$\nabla_{q_i} Q_k$')
-        plt.show()
-
-    else:
-        raise Exception("No such source")
-
-    import pdb
-    pdb.set_trace()
 
 LOSS = train.learn(target,f,batchSize,epochs,lr,saveSteps = lossPlotStep,savePath=rootFolder)
 

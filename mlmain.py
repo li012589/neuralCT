@@ -120,47 +120,4 @@ f = flowBuilder(n,numFlow,innerBuilder,1,relax=args.relax,shift=args.shift).to(d
 if not args.double:
     f = f.to(torch.float32)
 
-if args.load:
-    import os
-    import glob
-    name = max(glob.iglob(rootFolder+"savings/"+'*.saving'), key=os.path.getctime)
-    print("load saving at "+name)
-    saved = torch.load(name,map_location=device)
-    f.load(saved)
-
-    name = max(glob.iglob(rootFolder+"records/"+'*.hdf5'), key=os.path.getctime)
-    with h5py.File(name,"r") as h5:
-        LOSS =np.array(h5["LOSS"])
-        LOSSVAL =np.array(h5["LOSSVAL"])
-
-    d0 = f.layerList[0].elements[:n]
-    d1 = f.layerList[0].elements[n:]
-    omega = (1/(torch.exp(d0+d1))).detach()
-    print("omega",omega)
-
-    from matplotlib import pyplot as plt
-    from utils import logit_back,logit
-
-    from copy import deepcopy
-    omega, idx = torch.sort(omega)
-    original = target.sample(1)
-    saveList = [original[:,:784].reshape(28,28)]
-    z = f.forward(original)[0].detach()
-    for nslow in [5,10,15,20,25,30,35]:
-        noise = torch.randn(nslow)
-        zz = deepcopy(z)
-        zz[:,idx[nslow:784]] = f.layerList[0].inverse(torch.randn(original.shape))[0][:,idx[nslow:784]]
-        saveList.append(f.inverse(zz)[0].detach()[:,:784].reshape(28,28))
-    imgs = torch.cat(saveList,1)
-
-    plt.figure(figsize=(12,4))
-    plt.imshow(logit_back(imgs),cmap="gray")
-    plt.show()
-
-    import pdb
-    pdb.set_trace()
-
 LOSS = train.forwardLearn(target,f,batchSize,epochs,lr,saveSteps = lossPlotStep,savePath=rootFolder)
-
-import pdb
-pdb.set_trace()
