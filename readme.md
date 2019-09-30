@@ -1,13 +1,10 @@
 <div align="center">
 <img align="middle" src="etc/concept-1.png" width="700" alt="logo"/>
-<h2>Neural Canonical Transformation </h2>
 </div>
 
 PyTorch implement of the paper: Neural Canonical Transformation with Symplectic Flows. 
 
-A sympletic normalizing flow which captures collective modes in the latent space. It identifies slow collective variables and performs conceptual compression. 
-
-
+A symplectic normalizing flow captures slow and nonlinear collective modes in the latent space. The model learns dynamical information based on statistical correlations in the phase space. 
 
 ## Usage
 
@@ -17,7 +14,7 @@ A sympletic normalizing flow which captures collective modes in the latent space
 
 ### 1. Phase Space Density Estimation
 
-#### 1.1 Molecular Dynamics Trajectory data
+#### 1.1 Molecular Dynamics trajectory data
 
 To train a neuralCT for molecular dynamics data, use `density_estimation_md.py`
 ```bash
@@ -34,9 +31,9 @@ python ./density_estimation_md.py -cuda 6 -batch 200 -epoch 500 -fixy 2.3222 -da
 - **-smile**: SMILE expression of this molecular;
 - **-dataset**: Path to the training data.
 
-To see detailed options, run`python density_estimation_md.py -h`.
+To see detailed options, run `python density_estimation_md.py -h`.
 
-**Notebook to analysis** 
+**Analysis Notebook** 
 
 [Alanine Dipeptide](3_AlanineDipeptide.ipynb)
 
@@ -59,7 +56,7 @@ python ./density_estimation.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3
 
 To see detailed options, run`python density_estimation.py -h`.
 
-**Notebook to analysis**
+**Analysis Notebook**
 
 [MNIST concept compression](4_MNIST.ipynb)
 
@@ -68,7 +65,8 @@ To see detailed options, run`python density_estimation.py -h`.
 
 ### 2. Variational Free Energy
 
-To train a neuralCT via the variational approach, use `variation.py`. To train on our provided target distributios, you can specify this using **-source** option. To train on a different taget distribution, you will have to code your own target, examples can be found in `source` folder.
+To train a neuralCT via the variational approach, use `variation.py`. Specify the name of the target distribution with the  **-source** option. 
+
 ```bash
 python ./variation.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16 -source Ring2d
 ```
