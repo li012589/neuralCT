@@ -25,12 +25,12 @@ def flowBuilder(n,numFlow,innerBuilder=None,typeLayer=3,relax=False,shift=False)
     else:
         for d in range(numFlow):
             if typeLayer == 3:
-                layers.append(flow.PointwiseTransformation(innerBuilder(n)))
+                layers.append(flow.PointTransformation(innerBuilder(n)))
                 layers.append(flow.Symplectic(nn))
             elif typeLayer ==2:
                 layers.append(flow.Symplectic(nn))
             elif typeLayer ==1:
-                layers.append(flow.PointwiseTransformation(innerBuilder(n)))
+                layers.append(flow.PointTransformation(innerBuilder(n)))
             elif typeLayer!=0:
                 raise Exception("No such type")
     return flow.FlowNet(layers,op).double()

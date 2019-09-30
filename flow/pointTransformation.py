@@ -3,9 +3,9 @@ from torch import nn
 
 from .flow import Flow
 
-class PointwiseTransformation(Flow):
-    def __init__(self,flow,prior = None, name = "PointwiseTransformation"):
-        super(PointwiseTransformation,self).__init__(prior,name)
+class PointTransformation(Flow):
+    def __init__(self,flow,prior = None, name = "PointTransformation"):
+        super(PointTransformation,self).__init__(prior,name)
         self.flow = flow
 
     def inverse(self,y):

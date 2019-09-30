@@ -5,4 +5,4 @@ from .symplectic import Symplectic
 from .diagScaling import DiagScaling
 from .rnvp import RNVP
 from .nice import NICE
-from .pointwiseTransformation import PointwiseTransformation
+from .pointTransformation import PointTransformation

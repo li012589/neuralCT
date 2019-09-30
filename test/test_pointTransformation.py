@@ -27,7 +27,7 @@ def test_bijective():
     maskList = torch.cat(maskList,0).to(torch.float32)
 
     fl = flow.RNVP(maskList, [utils.SimpleMLPreshape([4,32,32,4],[nn.ELU(),nn.ELU(),None]) for _ in range(4)], [utils.SimpleMLPreshape([4,32,32,4],[nn.ELU(),nn.ELU(),utils.ScalableTanh(4)]) for _ in range(4)])
-    f = flow.PointwiseTransformation(fl,p)
+    f = flow.PointTransformation(fl,p)
     bijective(f)
 
 def test_saveload():
@@ -45,7 +45,7 @@ def test_saveload():
     maskList = torch.cat(maskList,0).to(torch.float32)
 
     fl = flow.RNVP(maskList, [utils.SimpleMLPreshape([4,32,32,4],[nn.ELU(),nn.ELU(),None]) for _ in range(4)], [utils.SimpleMLPreshape([4,32,32,4],[nn.ELU(),nn.ELU(),utils.ScalableTanh(4)]) for _ in range(4)])
-    f = flow.PointwiseTransformation(fl,p)
+    f = flow.PointTransformation(fl,p)
 
     p = source.Gaussian([8])
     maskList = []
@@ -61,7 +61,7 @@ def test_saveload():
     maskList = torch.cat(maskList,0).to(torch.float32)
 
     fl = flow.RNVP(maskList, [utils.SimpleMLPreshape([4,32,32,4],[nn.ELU(),nn.ELU(),None]) for _ in range(4)], [utils.SimpleMLPreshape([4,32,32,4],[nn.ELU(),nn.ELU(),utils.ScalableTanh(4)]) for _ in range(4)])
-    blankf = flow.PointwiseTransformation(fl,p)
+    blankf = flow.PointTransformation(fl,p)
     saveload(f,blankf)
 
 def test_symplectic():
@@ -79,7 +79,7 @@ def test_symplectic():
     maskList = torch.cat(maskList,0).to(torch.float32)
 
     fl = flow.RNVP(maskList, [utils.SimpleMLPreshape([4,32,32,4],[nn.ELU(),nn.ELU(),None]) for _ in range(4)], [utils.SimpleMLPreshape([4,32,32,4],[nn.ELU(),nn.ELU(),utils.ScalableTanh(4)]) for _ in range(4)])
-    f = flow.PointwiseTransformation(fl,p)
+    f = flow.PointTransformation(fl,p)
     symplectic(f)
 
 
