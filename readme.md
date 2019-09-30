@@ -2,9 +2,11 @@
 <img align="middle" src="etc/concept-1.png" width="700" alt="logo"/>
 </div>
 
+
+
 PyTorch implement of the paper: Neural Canonical Transformation with Symplectic Flows. 
 
-A symplectic normalizing flow captures slow and nonlinear collective modes in the latent space. The model learns dynamical information based on statistical correlations in the phase space. 
+A symplectic normalizing flow learns slow and nonlinear collective modes in the latent space. The model reveals dynamical information from statistical correlations in the phase space. 
 
 ## Usage
 
@@ -63,9 +65,9 @@ To see detailed options, run`python density_estimation.py -h`.
 
 
 
-### 2. Variational Free Energy
+### 2. Variational Free Energy Calculation
 
-To train a neuralCT via the variational approach, use `variation.py`. Specify the name of the target distribution with the  **-source** option. 
+To train a neuralCT via the variational approach, use `variation.py`. Specify the name of the distribution with the  **-source** option. 
 
 ```bash
 python ./variation.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16 -source Ring2d
@@ -82,7 +84,7 @@ python ./variation.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers
 
 To see detailed options, run `python variation.py -h`.
 
-**Notebooks to analysis**
+**Analysis Notebooks**
 
 1. [Ring2D distribution](1_Ringworld.ipynb)
 2. [Harmonic Chain](2_HarmonicChain.ipynb)
@@ -100,4 +102,4 @@ To see detailed options, run `python variation.py -h`.
 
 ## Contact
 
-For questions and suggestions, contact Shuo-Hui Li at [contact_lish@iphy.ac.cn](mailto:contact_lish@iphy.ac.cn).
+For questions and suggestions, please contact Shuo-Hui Li at [contact_lish@iphy.ac.cn](mailto:contact_lish@iphy.ac.cn).
