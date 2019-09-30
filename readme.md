@@ -12,7 +12,7 @@ A symplectic normalizing flow learns slow and nonlinear collective modes in the 
 
 ### 0. How to download
 
-*If you want to clone with demo saving and demo dataset, you need to run `python download_demo.py` to download savings and datasets from Google Drive.*
+*If you want to run the following demos, you need to run `python download_demo.py` to download savings and datasets from Google Drive.*
 
 ### 1. Phase Space Density Estimation
 
