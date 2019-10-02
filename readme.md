@@ -22,7 +22,7 @@ Both `pytorch` and `numpy` are required, you can install them using  `anaconda`.
 
 To train a neuralCT for molecular dynamics data, use `density_estimation_md.py`
 ```bash
-python ./density_estimation_md.py -cuda 6 -batch 200 -epoch 500 -fixy 2.3222 -dataset ./database/alanine-dipeptide-3x250ns-heavy-atom-positions.npz
+python ./density_estimation_md.py -batch 200 -epoch 500 -fixy 2.3222 -dataset ./database/alanine-dipeptide-3x250ns-heavy-atom-positions.npz
 ```
 
 **Key Options**
@@ -45,7 +45,7 @@ To see detailed options, run `python density_estimation_md.py -h`.
 
 To train a neuralCT for machine learning dataset, use `density_estimation.py`. 
 ```bash
-python ./density_estimation.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16 -dataset ./database/mnist.npz
+python ./density_estimation.py -epochs 5000 -batch 200 -hdim 256 -nmlp 3 -nlayers 16 -dataset ./database/mnist.npz
 ```
 
 **Key Options**
@@ -72,7 +72,7 @@ To see detailed options, run`python density_estimation.py -h`.
 To train a neuralCT via the variational approach, use `variation.py`. Specify the name of the distribution with the  **-source** option. 
 
 ```bash
-python ./variation.py -epochs 5000 -batch 200 -cuda 1 -hdim 256 -nmlp 3 -nlayers 16 -source Ring2d
+python ./variation.py -epochs 5000 -batch 200 -hdim 256 -nmlp 3 -nlayers 16 -source Ring2d
 ```
 
 **Key Options**
