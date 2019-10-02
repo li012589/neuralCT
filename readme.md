@@ -14,7 +14,11 @@ A symplectic normalizing flow learns slow and nonlinear collective modes in the 
 
 Both  [`pytorch`](https://pytorch.org/) and [`numpy`](https://numpy.org/) are required, you can install them using [`anaconda`](http://anaconda.org).
 
-*If you want to run the following demos, you need to run `python download_demo.py` to download savings and datasets from Google Drive.*
+*If you want to run the following demos, you need to download savings and datasets from Google Drive. To do this run:*
+
+```bash
+python download_demo.py
+```
 
 ### 1. Phase Space Density Estimation
 
