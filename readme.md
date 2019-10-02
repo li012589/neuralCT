@@ -4,13 +4,15 @@
 
 
 
-PyTorch implement of the paper: Neural Canonical Transformation with Symplectic Flows. 
+PyTorch implement of the paper [Neural Canonical Transformation with Symplectic Flows](https://arxiv.org/abs/1910.00024). 
 
 A symplectic normalizing flow learns slow and nonlinear collective modes in the latent space. The model reveals dynamical information from statistical correlations in the phase space. 
 
 ## Usage
 
-### 0. How to download
+### 0. Setup Guide
+
+
 
 *If you want to run the following demos, you need to run `python download_demo.py` to download savings and datasets from Google Drive.*
 
