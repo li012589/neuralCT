@@ -12,7 +12,7 @@ A symplectic normalizing flow learns slow and nonlinear collective modes in the 
 
 ### 0. Setup Guide
 
-Both  [`pytorch`](https://pytorch.org/) and [`numpy`](https://numpy.org/) are required, you can install them using   [`pytorch`](https://pytorch.org/).
+Both  [`pytorch`](https://pytorch.org/) and [`numpy`](https://numpy.org/) are required, you can install them using [`anaconda`](http://anaconda.org).
 
 *If you want to run the following demos, you need to run `python download_demo.py` to download savings and datasets from Google Drive.*
 
