@@ -96,7 +96,7 @@ To see detailed options, run `python variation.py -h`.
   Author = {Shuo-Hui Li, Chen-Xiao Dong, Linfeng Zhang, and Lei Wang},
   Title = {Neural Canonical Transformation with Symplectic Flows},
   Year = {2019},
-  Eprint = {arXiv:XXXX.XXXXX},
+  Eprint = {arXiv:1910.00024},
 }
 ````
 
