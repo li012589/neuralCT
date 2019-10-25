@@ -54,5 +54,7 @@ during the download. If you do, remove `data` folder and try again.')
 data = load_MNIST()
 
 sav = np.concatenate([data[0],data[2]],axis=0)
+labs = np.concatenate([data[1],data[3]],axis=0)
 
 np.savez("./mnist.npz",sav)
+np.savez("./mnistLabs.npz",labs)
