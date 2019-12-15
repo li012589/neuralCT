@@ -3,11 +3,11 @@ from .iteration import iteration,iterationMulti
 
 def stormerVerlet(q,p,H,t,steps,rtol=1e-05,atol=1e-08,maxSteps=10,detach=True):
     if detach:
-        Q = [q.detach()]
-        P = [p.detach()]
+        Q = [q.detach().unsqueeze(0)]
+        P = [p.detach().unsqueeze(0)]
     else:
-        Q = [q]
-        P = [p]
+        Q = [q.unsqueeze(0)]
+        P = [p.unsqueeze(0)]
     Hq,Hp = _force(H)
     p = p.requires_grad_()
     q = q.requires_grad_()
@@ -27,13 +27,13 @@ def stormerVerlet(q,p,H,t,steps,rtol=1e-05,atol=1e-08,maxSteps=10,detach=True):
 
         p = p-t*0.5*Hq(q,p)
         if detach:
-            Q.append(q.detach())
-            P.append(p.detach())
+            Q.append(q.detach().unsqueeze(0))
+            P.append(p.detach().unsqueeze(0))
             p = p.detach().requires_grad_()
             q = q.detach().requires_grad_()
         else:
-            Q.append(q)
-            P.append(p)
+            Q.append(q.unsqueeze(0))
+            P.append(p.unsqueeze(0))
     Q = torch.cat(Q,dim=0)
     P = torch.cat(P,dim=0)
     return Q,P
