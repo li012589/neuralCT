@@ -10,8 +10,9 @@ def stormerVerlet(eta,*args):
 def buildSource(f):
     return flow.FlowNet([f.layerList[0]],f.prior).double()
 
-def timeEvolve(flow,t,steps,batchSize,method="stomerVerlect"):
+def timeEvolve(flow,t,steps,batchSize,method="stomerVerlect",initalPoint=None):
     H = lambda q,p: flow.energy(torch.cat([q,p],dim=-1))
-    initalPoint = flow.sample(batchSize)[0]
+    if initalPoint is None:
+        initalPoint = flow.sample(batchSize)[0]
     trajs = stormerVerlet(initalPoint,H,t,steps)
     return trajs
