@@ -12,3 +12,4 @@ from .unit import variance, smile2mass
 from .img_trans import logit,logit_back
 from .intMethod import stormerVerlet
 from .intTool import timeEvolve, buildSource
+from .dihedralAngle import alanineDipeptidePhiPsi
