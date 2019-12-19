@@ -7,7 +7,7 @@ from .layerList import inverseThoughList
 from .symplecticTools import J,MTJM,assertMTJM
 from .saveUtils import createWorkSpace,cleanSaving
 from .dataloader import MDSampler,loadmd, load
-from .flowBuilder import flowBuilder
+from .flowBuilder import flowBuilder, extractFlow
 from .unit import variance, smile2mass
 from .img_trans import logit,logit_back
 from .intMethod import stormerVerlet
