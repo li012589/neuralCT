@@ -34,3 +34,14 @@ def flowBuilder(n,numFlow,innerBuilder=None,typeLayer=3,relax=False,shift=False)
             elif typeLayer!=0:
                 raise Exception("No such type")
     return flow.FlowNet(layers,op).double()
+
+def extractFlow(flowCon):
+    from copy import deepcopy
+    layers = []
+    _op = deepcopy(flowCon.prior)
+    _rnvp = deepcopy(flowCon.layerList[1].flow)
+    _diag = flowCon.layerList[0]
+    nn = _diag.shift.shape[0]//2
+    layers.append(flow.DiagScaling(nn,initValue=_diag.elements.clone().detach()[:nn]))
+    layers.append(_rnvp)
+    return flow.FlowNet(layers,_op).double()
