@@ -66,102 +66,48 @@ print("load saving at "+name)
 saved = torch.load(name,map_location=device)
 f.load(saved);
 
-# Calculate modes in the latent space.
-
 d0 = f.layerList[0].elements[:n]
 d1 = f.layerList[0].elements[n:]
 omega = (1/(torch.exp(d0+d1))).detach()
 omega, idx = torch.sort(omega)
 
-from matplotlib import pyplot as plt
-from utils import logit_back,logit
+# Calculate modes in the latent space.
 
-output = True
+from matplotlib import pyplot as plt
 
 frnvp = utils.extractFlow(f).to(dtype)
+# cluster plot.
+def plot2DCluster(model,data,label,idx):
+    tmp = torch.randn(data.shape)
+    datap = torch.cat([data,tmp],dim = 1)
+    zs = model.forward(datap)[0].detach()[:,:28*28]
+    plt.figure(figsize=(12,12))
+    plotdata = [[] for _ in range(10)]
+    colormap = ["black","peru","darkorange","tan","olive","green","red","lightslategray","blue","purple"]
+    for no,lb in enumerate(label):
+        i = int(lb.item())
+        plotdata[i].append((zs[no][idx[0]],zs[no][idx[1]]))
+    plotdata = [np.array(plotdata[i]) for i in range(10)]
+    for i in range(10):
+        if len(plotdata[i]) == 0:
+            continue
+        plt.scatter(plotdata[i][:,0],plotdata[i][:,1],c=colormap[i],label=str(i))
+    plt.legend()
+    plt.show()
 
-sample1 = target.sample(1)
-sample2 = target.sample(1)
+RES = []
+LAB = []
+sampleSize = 700
+for _ in range(1000):
+    idxs = np.random.randint(0,dataset.shape[0],sampleSize)
+    sampleset = dataset[idxs]
+    samplelabs = datasetlabs[idxs]
+    zs = frnvp.forward(sampleset)[0].detach()[:,idx[:2]]
+    RES.append(zs)
+    LAB.append(samplelabs)
+RES = torch.cat(RES,0).detach().numpy()
+LAB = torch.cat(LAB,0).detach().numpy()
 
-zsample1 = f.forward(sample1)[0][:,:784].detach()
-zsample2 = f.forward(sample2)[0][:,:784].detach()
-
-xoriginal1 = frnvp.inverse(zsample1)[0].detach()
-
-
-plt.figure()
-plt.imshow(logit_back(sample1[:,:784].reshape(28,28)),cmap="gray")
-plt.axis('off')
-
-if output:
-    plt.savefig('Fig7a.pdf')
-
-plt.figure()
-plt.imshow(logit_back(sample2[:,:784].reshape(28,28)),cmap="gray")
-plt.axis('off')
-
-if output:
-    plt.savefig('Fig7b.pdf')
-
-
-
-L = 10.
-
-delta = (zsample2-zsample1)/L
-
-dims = [5,10,20,40,120,200,450,784]
-
-plt.rcParams['ytick.right'] = True
-plt.rcParams['ytick.labelright'] = True
-plt.rcParams['ytick.left'] = False
-plt.rcParams['ytick.labelleft'] = False
-
-from copy import deepcopy
-BIGSAMPLES = []
-for dim in dims:
-    SAMPLES = []
-    for i in range(int(L+1)):
-        _tmp = deepcopy(zsample1)
-        _dim = idx[:dim]
-        _tmp[:,_dim] = zsample1[:,_dim]+(delta*i)[:,_dim]
-        SAMPLES.append(frnvp.inverse(_tmp)[0].detach().reshape(28,28))
-    imgs = torch.cat(SAMPLES,1)
-    BIGSAMPLES.append(imgs)
-imgs = torch.cat(BIGSAMPLES,0)
-
-plt.figure(figsize=(12,12))
-plt.imshow(logit_back(imgs),cmap="gray")
-ax = plt.gca()
-plt.xticks([])
-plt.yticks(np.arange(len(dims))*28+14,dims)
-plt.ylabel("$n_{slow}$",fontsize = "x-large")
-ax.yaxis.set_label_position("right")
-if output:
-    plt.savefig('Fig7c.pdf')
-
-
-BIGSAMPLES = []
-for dim in dims:
-    SAMPLES = []
-    for i in range(int(L+1)):
-        _tmp = deepcopy(zsample1)
-        _tmp[:,:dim] = zsample1[:,:dim]+(delta*i)[:,:dim]
-        SAMPLES.append(frnvp.inverse(_tmp)[0].detach().reshape(28,28))
-    imgs = torch.cat(SAMPLES,1)
-    BIGSAMPLES.append(imgs)
-imgs = torch.cat(BIGSAMPLES,0)
-
-plt.figure(figsize=(12,12))
-plt.imshow(logit_back(imgs),cmap="gray")
-ax = plt.gca()
-plt.xticks([])
-plt.yticks(np.arange(len(dims))*28+14,dims)
-plt.ylabel("$n_{random}$",fontsize = "x-large")
-ax.yaxis.set_label_position("right")
-
-if output:
-    plt.savefig('Fig7d.pdf')
-
-
-plt.show()
+np.savez("ScatterMNIST.npz",RES=RES,LAB=LAB)
+#plot2DCluster(f,sampleset,samplelabs,idx)
 

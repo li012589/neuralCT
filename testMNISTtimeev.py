@@ -68,100 +68,48 @@ f.load(saved);
 
 # Calculate modes in the latent space.
 
+from matplotlib import pyplot as plt
+from utils import logit_back,logit
+
 d0 = f.layerList[0].elements[:n]
 d1 = f.layerList[0].elements[n:]
 omega = (1/(torch.exp(d0+d1))).detach()
 omega, idx = torch.sort(omega)
 
-from matplotlib import pyplot as plt
-from utils import logit_back,logit
+sample1 = target.sample(1)
+plt.figure()
+plt.imshow(logit_back(sample1[:,:784].reshape(28,28)),cmap="gray")
 
-output = True
+'''
+zsample = f.forward(sample1)[0].detach()
+zsample1 = zsample[:,:784]
+'''
+
+zsample1 = f.forward(sample1)[0][:,:784].detach()
+zsample = torch.cat([zsample1,torch.zeros_like(zsample1)],1)
+
+from utils import timeEvolve, buildSource
+
+latentSource = buildSource(f).to(dtype)
+
+trajs = timeEvolve(latentSource,0.005,30000,1,initalPoint=zsample.to(dtype))[:,:,:784].reshape(-1,784).detach()
+
+plt.figure()
+plt.scatter(trajs[:,idx[0]].numpy(),trajs[:,idx[1]].numpy())
+plt.plot(trajs[:,idx[0]].numpy(),trajs[:,idx[1]].numpy())
+
+L = 10
+
+selectedIdx = [i for i in range(1,trajs.shape[0],trajs.shape[0]//(L*L))]
+
+selectedTrajs = trajs[selectedIdx,:]
 
 frnvp = utils.extractFlow(f).to(dtype)
 
-sample1 = target.sample(1)
-sample2 = target.sample(1)
+for dim in [40,300,600,700,784]:
+    selectedTrajsQ = logit_back(frnvp.inverse(torch.cat([selectedTrajs[:,idx[:dim]],zsample1[:,idx[dim:]].repeat(100,1)],1))[0].reshape(L,L,28,28)).permute([0,2,1,3]).reshape(L*28,L*28).detach().numpy()
 
-zsample1 = f.forward(sample1)[0][:,:784].detach()
-zsample2 = f.forward(sample2)[0][:,:784].detach()
-
-xoriginal1 = frnvp.inverse(zsample1)[0].detach()
-
-
-plt.figure()
-plt.imshow(logit_back(sample1[:,:784].reshape(28,28)),cmap="gray")
-plt.axis('off')
-
-if output:
-    plt.savefig('Fig7a.pdf')
-
-plt.figure()
-plt.imshow(logit_back(sample2[:,:784].reshape(28,28)),cmap="gray")
-plt.axis('off')
-
-if output:
-    plt.savefig('Fig7b.pdf')
-
-
-
-L = 10.
-
-delta = (zsample2-zsample1)/L
-
-dims = [5,10,20,40,120,200,450,784]
-
-plt.rcParams['ytick.right'] = True
-plt.rcParams['ytick.labelright'] = True
-plt.rcParams['ytick.left'] = False
-plt.rcParams['ytick.labelleft'] = False
-
-from copy import deepcopy
-BIGSAMPLES = []
-for dim in dims:
-    SAMPLES = []
-    for i in range(int(L+1)):
-        _tmp = deepcopy(zsample1)
-        _dim = idx[:dim]
-        _tmp[:,_dim] = zsample1[:,_dim]+(delta*i)[:,_dim]
-        SAMPLES.append(frnvp.inverse(_tmp)[0].detach().reshape(28,28))
-    imgs = torch.cat(SAMPLES,1)
-    BIGSAMPLES.append(imgs)
-imgs = torch.cat(BIGSAMPLES,0)
-
-plt.figure(figsize=(12,12))
-plt.imshow(logit_back(imgs),cmap="gray")
-ax = plt.gca()
-plt.xticks([])
-plt.yticks(np.arange(len(dims))*28+14,dims)
-plt.ylabel("$n_{slow}$",fontsize = "x-large")
-ax.yaxis.set_label_position("right")
-if output:
-    plt.savefig('Fig7c.pdf')
-
-
-BIGSAMPLES = []
-for dim in dims:
-    SAMPLES = []
-    for i in range(int(L+1)):
-        _tmp = deepcopy(zsample1)
-        _tmp[:,:dim] = zsample1[:,:dim]+(delta*i)[:,:dim]
-        SAMPLES.append(frnvp.inverse(_tmp)[0].detach().reshape(28,28))
-    imgs = torch.cat(SAMPLES,1)
-    BIGSAMPLES.append(imgs)
-imgs = torch.cat(BIGSAMPLES,0)
-
-plt.figure(figsize=(12,12))
-plt.imshow(logit_back(imgs),cmap="gray")
-ax = plt.gca()
-plt.xticks([])
-plt.yticks(np.arange(len(dims))*28+14,dims)
-plt.ylabel("$n_{random}$",fontsize = "x-large")
-ax.yaxis.set_label_position("right")
-
-if output:
-    plt.savefig('Fig7d.pdf')
-
+    plt.figure(figsize=(12,12))
+    plt.imshow(selectedTrajsQ,cmap="gray")
 
 plt.show()
-

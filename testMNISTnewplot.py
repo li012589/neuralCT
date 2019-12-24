@@ -68,100 +68,78 @@ f.load(saved);
 
 # Calculate modes in the latent space.
 
+from matplotlib import pyplot as plt
+from utils import logit_back,logit
+
 d0 = f.layerList[0].elements[:n]
 d1 = f.layerList[0].elements[n:]
 omega = (1/(torch.exp(d0+d1))).detach()
 omega, idx = torch.sort(omega)
 
-from matplotlib import pyplot as plt
-from utils import logit_back,logit
-
-output = True
-
-frnvp = utils.extractFlow(f).to(dtype)
-
 sample1 = target.sample(1)
-sample2 = target.sample(1)
-
-zsample1 = f.forward(sample1)[0][:,:784].detach()
-zsample2 = f.forward(sample2)[0][:,:784].detach()
-
-xoriginal1 = frnvp.inverse(zsample1)[0].detach()
-
-
 plt.figure()
 plt.imshow(logit_back(sample1[:,:784].reshape(28,28)),cmap="gray")
-plt.axis('off')
 
-if output:
-    plt.savefig('Fig7a.pdf')
+zsample = f.forward(sample1)[0].detach()
+zsample1 = zsample[:,:784]
+
+'''
+zsample1 = f.forward(sample1)[0][:,:784].detach()
+zsample = torch.cat([zsample1,torch.zeros_like(zsample1)],1)
+'''
+
+from utils import timeEvolve, buildSource
+
+latentSource = buildSource(f).to(dtype)
+
+trajs = timeEvolve(latentSource,0.005,30000,1,initalPoint=zsample.to(dtype)).reshape(-1,zsample.shape[1]).detach()
 
 plt.figure()
-plt.imshow(logit_back(sample2[:,:784].reshape(28,28)),cmap="gray")
-plt.axis('off')
+plt.scatter(trajs[:,idx[0]].numpy(),trajs[:,idx[1]].numpy())
+plt.plot(trajs[:,idx[0]].numpy(),trajs[:,idx[1]].numpy())
 
-if output:
-    plt.savefig('Fig7b.pdf')
+L = 10
 
+selectedIdx = [i for i in range(1,trajs.shape[0],trajs.shape[0]//(L*L))]
 
+selectedTrajs = trajs[selectedIdx,:]
 
-L = 10.
+'''
+frnvp = utils.extractFlow(f).to(dtype)
 
-delta = (zsample2-zsample1)/L
+selectedTrajsQ = logit_back(frnvp.inverse(selectedTrajs[:,:784])[0].reshape(L,L,28,28)).permute([0,2,1,3]).reshape(L*28,L*28).detach().numpy()
+'''
 
-dims = [5,10,20,40,120,200,450,784]
+_selectedTrajsQ = f.inverse(selectedTrajs)[0]
+selectedTrajsQ = logit_back(_selectedTrajsQ[:,:784].reshape(L,L,28,28)).permute(0,2,1,3).reshape(L*28,L*28).detach().numpy()
 
-plt.rcParams['ytick.right'] = True
-plt.rcParams['ytick.labelright'] = True
-plt.rcParams['ytick.left'] = False
-plt.rcParams['ytick.labelleft'] = False
+from utils import measureM
 
-from copy import deepcopy
-BIGSAMPLES = []
-for dim in dims:
-    SAMPLES = []
-    for i in range(int(L+1)):
-        _tmp = deepcopy(zsample1)
-        _dim = idx[:dim]
-        _tmp[:,_dim] = zsample1[:,_dim]+(delta*i)[:,_dim]
-        SAMPLES.append(frnvp.inverse(_tmp)[0].detach().reshape(28,28))
-    imgs = torch.cat(SAMPLES,1)
-    BIGSAMPLES.append(imgs)
-imgs = torch.cat(BIGSAMPLES,0)
+momentums = measureM(selectedTrajs).detach().numpy()
+momentumsp = momentums.reshape(10,10)
 
-plt.figure(figsize=(12,12))
-plt.imshow(logit_back(imgs),cmap="gray")
-ax = plt.gca()
-plt.xticks([])
-plt.yticks(np.arange(len(dims))*28+14,dims)
-plt.ylabel("$n_{slow}$",fontsize = "x-large")
-ax.yaxis.set_label_position("right")
-if output:
-    plt.savefig('Fig7c.pdf')
+Qmomentums = measureM(selectedTrajs,idx,300).detach().numpy()
+Qmomentumsp = Qmomentums.reshape(10,10)
 
-
-BIGSAMPLES = []
-for dim in dims:
-    SAMPLES = []
-    for i in range(int(L+1)):
-        _tmp = deepcopy(zsample1)
-        _tmp[:,:dim] = zsample1[:,:dim]+(delta*i)[:,:dim]
-        SAMPLES.append(frnvp.inverse(_tmp)[0].detach().reshape(28,28))
-    imgs = torch.cat(SAMPLES,1)
-    BIGSAMPLES.append(imgs)
-imgs = torch.cat(BIGSAMPLES,0)
+'''
+Qmomentums = measureM(_selectedTrajsQ).detach().numpy()
+Qmomentumsp = Qmomentums.reshape(10,10)
+'''
 
 plt.figure(figsize=(12,12))
-plt.imshow(logit_back(imgs),cmap="gray")
-ax = plt.gca()
-plt.xticks([])
-plt.yticks(np.arange(len(dims))*28+14,dims)
-plt.ylabel("$n_{random}$",fontsize = "x-large")
-ax.yaxis.set_label_position("right")
+plt.imshow(selectedTrajsQ,cmap="gray")
 
-if output:
-    plt.savefig('Fig7d.pdf')
+'''
+plt.figure(figsize=(12,1))
+plt.plot(np.arange(momentums.shape[0]),momentums)
+'''
 
+plt.figure(figsize=(10,10))
+for i in range(L):
+    plt.subplot(L,1,i+1)
+    plt.axhline(y=momentumsp[0,0],color="r",)
+    plt.axhline(y=Qmomentumsp[0,0],color="k",)
+    plt.plot(np.arange(momentumsp.shape[1]),momentumsp[i,:])
+    plt.plot(np.arange(Qmomentumsp.shape[1]),Qmomentumsp[i,:])
 
 plt.show()
-
