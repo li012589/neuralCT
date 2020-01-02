@@ -75,32 +75,22 @@ d0 = f.layerList[0].elements[:n]
 d1 = f.layerList[0].elements[n:]
 omega = (1/(torch.exp(d0+d1))).detach()
 omega, idx = torch.sort(omega)
+from matplotlib import pyplot as plt
+from matplotlib.offsetbox import AnchoredText
 
-sample1 = target.sample(1)
-plt.figure()
-plt.imshow(logit_back(sample1[:,:784].reshape(28,28)),cmap="gray")
-
-'''
-zsample = f.forward(sample1)[0].detach()
-zsample1 = zsample[:,:784]
-'''
-
-zsample1 = f.forward(sample1)[0][:,:784].detach()
-zsample = torch.cat([zsample1,torch.zeros_like(zsample1)],1)
-
-from utils import timeEvolve, buildSource
-
-latentSource = buildSource(f).to(dtype)
-
-trajs = timeEvolve(latentSource,0.005,30000,1,initalPoint=zsample.to(dtype))[:,:,:784].reshape(-1,784).detach()
-
-np.savez("trajsMNIST.npz",trajs.detach().numpy())
-
+# Set gobal variables.
 data = np.load("./ScatterMNIST.npz")
 labs = data["LAB"]
 dots = data["RES"]
 
-plt.figure(figsize=(12,12))
+trajs = np.load("./trajsMNIST.npz")["arr_0"]
+
+plt.figure(figsize=(6,12))
+#plt.subplots_adjust(hspace=0.1)
+
+ax = plt.subplot(2,1,2)
+at2 = AnchoredText("(b)",loc='lower center', prop=dict(size=17), frameon=False,bbox_to_anchor=(0., 1.),bbox_transform=ax.transAxes)
+ax.add_artist(at2)
 plotdata = [[] for _ in range(10)]
 colormap = ["black","peru","darkorange","tan","olive","green","red","lightslategray","blue","purple"]
 #colormap = [["#"+hex(i)[2:]] for i in range(14548591,16674671,212608)]
@@ -108,15 +98,19 @@ colormap = ["black","peru","darkorange","tan","olive","green","red","lightslateg
 for no,lb in enumerate(labs):
     i = int(lb.item())
     plotdata[i].append((dots[no][0],dots[no][1]))
-plotdata = [np.array(plotdata[i])[:4000] for i in range(10)]
+plotdata = [np.array(plotdata[i])[:3000] for i in range(10)]
 for i in range(10):
     if len(plotdata[i]) == 0:
         continue
     plt.scatter(plotdata[i][:,0],plotdata[i][:,1],c=colormap[i],label=str(i),alpha=0.3)
 plt.legend()
-plt.plot(trajs[:,idx[0]].numpy(),trajs[:,idx[1]].numpy())
+plt.plot(trajs[:,idx[0]],trajs[:,idx[1]],linewidth=4,color = "darkorange")
+plt.xlabel("$n_1$",fontsize = "x-large")
+plt.ylabel("$n_2$",fontsize = "x-large")
+#plt.savefig("subplotTimeElve.pdf")
+#plt.show()
 
-#plt.scatter(trajs[:,idx[0]].numpy(),trajs[:,idx[1]].numpy())
+trajs = torch.from_numpy(trajs).to(dtype)
 
 L = 10
 
@@ -127,16 +121,11 @@ selectedTrajs = trajs[selectedIdx,:]
 frnvp = utils.extractFlow(f).to(dtype)
 
 selectedTrajsQ = logit_back(frnvp.inverse(selectedTrajs)[0].reshape(L,L,28,28)).permute([0,2,1,3]).reshape(L*28,L*28).detach().numpy()
-plt.figure(figsize=(12,12))
+
+ax = plt.subplot(2,1,1)
+at2 = AnchoredText("(a)",loc='lower center', prop=dict(size=17), frameon=False,bbox_to_anchor=(0., 1.),bbox_transform=ax.transAxes)
+ax.add_artist(at2)
 plt.imshow(selectedTrajsQ,cmap="gray")
 plt.axis('off')
-
-for dim in [784]:
-    selectedTrajsQ = logit_back(frnvp.inverse(torch.cat([selectedTrajs[:,idx[:dim]],zsample1[:,idx[dim:]].repeat(100,1)],1))[0].reshape(L,L,28,28)).permute([0,2,1,3]).reshape(L*28,L*28).detach().numpy()
-
-    plt.figure(figsize=(12,12))
-    plt.imshow(selectedTrajsQ,cmap="gray")
-    plt.axis('off')
-
-
+plt.savefig("timeEvolve.pdf")
 plt.show()

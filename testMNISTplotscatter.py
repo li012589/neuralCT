@@ -6,7 +6,6 @@ import train
 import utils
 import math
 import h5py
-
 # Set gobal variables.
 
 rootFolder = "./demo/MNIST_relax_True_shift_True_T_300_depthLevel_1_l16_M3_H680/"
@@ -76,31 +75,16 @@ d1 = f.layerList[0].elements[n:]
 omega = (1/(torch.exp(d0+d1))).detach()
 omega, idx = torch.sort(omega)
 
-sample1 = target.sample(1)
-plt.figure()
-plt.imshow(logit_back(sample1[:,:784].reshape(28,28)),cmap="gray")
+from matplotlib import pyplot as plt
 
-'''
-zsample = f.forward(sample1)[0].detach()
-zsample1 = zsample[:,:784]
-'''
-
-zsample1 = f.forward(sample1)[0][:,:784].detach()
-zsample = torch.cat([zsample1,torch.zeros_like(zsample1)],1)
-
-from utils import timeEvolve, buildSource
-
-latentSource = buildSource(f).to(dtype)
-
-trajs = timeEvolve(latentSource,0.005,30000,1,initalPoint=zsample.to(dtype))[:,:,:784].reshape(-1,784).detach()
-
-np.savez("trajsMNIST.npz",trajs.detach().numpy())
-
+# Set gobal variables.
 data = np.load("./ScatterMNIST.npz")
 labs = data["LAB"]
 dots = data["RES"]
 
-plt.figure(figsize=(12,12))
+trajs = np.load("./trajsMNIST.npz")["arr_0"]
+
+plt.figure(figsize=(6,6))
 plotdata = [[] for _ in range(10)]
 colormap = ["black","peru","darkorange","tan","olive","green","red","lightslategray","blue","purple"]
 #colormap = [["#"+hex(i)[2:]] for i in range(14548591,16674671,212608)]
@@ -108,35 +92,14 @@ colormap = ["black","peru","darkorange","tan","olive","green","red","lightslateg
 for no,lb in enumerate(labs):
     i = int(lb.item())
     plotdata[i].append((dots[no][0],dots[no][1]))
-plotdata = [np.array(plotdata[i])[:4000] for i in range(10)]
+plotdata = [np.array(plotdata[i])[:3000] for i in range(10)]
 for i in range(10):
     if len(plotdata[i]) == 0:
         continue
     plt.scatter(plotdata[i][:,0],plotdata[i][:,1],c=colormap[i],label=str(i),alpha=0.3)
 plt.legend()
-plt.plot(trajs[:,idx[0]].numpy(),trajs[:,idx[1]].numpy())
-
-#plt.scatter(trajs[:,idx[0]].numpy(),trajs[:,idx[1]].numpy())
-
-L = 10
-
-selectedIdx = [i for i in range(1,trajs.shape[0],trajs.shape[0]//(L*L))]
-
-selectedTrajs = trajs[selectedIdx,:]
-
-frnvp = utils.extractFlow(f).to(dtype)
-
-selectedTrajsQ = logit_back(frnvp.inverse(selectedTrajs)[0].reshape(L,L,28,28)).permute([0,2,1,3]).reshape(L*28,L*28).detach().numpy()
-plt.figure(figsize=(12,12))
-plt.imshow(selectedTrajsQ,cmap="gray")
-plt.axis('off')
-
-for dim in [784]:
-    selectedTrajsQ = logit_back(frnvp.inverse(torch.cat([selectedTrajs[:,idx[:dim]],zsample1[:,idx[dim:]].repeat(100,1)],1))[0].reshape(L,L,28,28)).permute([0,2,1,3]).reshape(L*28,L*28).detach().numpy()
-
-    plt.figure(figsize=(12,12))
-    plt.imshow(selectedTrajsQ,cmap="gray")
-    plt.axis('off')
-
-
+plt.plot(trajs[:,idx[0]],trajs[:,idx[1]],linewidth=4,color = "darkorange")
+plt.xlabel("$n_1$",fontsize = "x-large")
+plt.ylabel("$n_2$",fontsize = "x-large")
+plt.savefig("subplotTimeElve.pdf")
 plt.show()
