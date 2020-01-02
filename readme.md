@@ -45,6 +45,8 @@ To see detailed options, run `python density_estimation_md.py -h`.
 
 [Alanine Dipeptide](3_AlanineDipeptide.ipynb)
 
+![mods](etc/mods.gif)
+
 #### 1.2  Image dataset
 
 To train a neuralCT for machine learning dataset, use `density_estimation.py`. 
