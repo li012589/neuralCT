@@ -147,7 +147,7 @@ Xs = [frnvp.inverse(term)[0].detach() for term in Zs]
 EnXs = torch.cat([frnvp.energy(term) for term in Xs]).detach().reshape(3,-1).numpy()
 EnZs = torch.cat([frnvp.prior.energy(term) for term in Zs]).detach().reshape(3,-1).numpy()
 
-np.savez("meshAngles.npz",arr0 = Xs[0].numpy(),arr1 = Xs[1].numpy(),arr2 = Xs[2].numpy())
+np.savez("meshAnglesp.npz",arr0 = Xs[0].numpy(),arr1 = Xs[1].numpy(),arr2 = Xs[2].numpy())
 print("saving mesh data at meshAngles.npz")
 
 figx = plt.figure(figsize=(10,8))
@@ -170,10 +170,10 @@ for i in range(len(EnXs)):
     axx2.scatter(steps,EnZs[i,:],color="orange")
     if i == 1:
         axx1.set_ylabel('Physical Energy',fontsize="x-large")
-        axx2.set_ylabel('Latent Energy',fontsize="x-large")
+        axx2.set_ylabel('Gaussian Energy',fontsize="x-large")
     axx2.tick_params(axis='y', labelcolor="orange")
 
-axx1.set_xlabel('steps')
+axx1.set_xlabel('steps', fontsize="x-large")
 plt.savefig("MeshAnglesA.pdf")
 
 plt.figure(figsize=(10,4))
