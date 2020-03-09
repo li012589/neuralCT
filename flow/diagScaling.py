@@ -30,7 +30,7 @@ class DiagScaling(Flow):
 
     def forward(self,z):
         forwardLogjac = -torch.sum(self.elements*self.fix)
-        return z*torch.exp(-self.elements*self.fix)-self.shift,forwardLogjac
+        return (z-self.shift)*torch.exp(-self.elements*self.fix),forwardLogjac
 
     def transMatrix(self,sign=1):
         if sign == 1:
